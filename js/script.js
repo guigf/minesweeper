@@ -5,17 +5,54 @@ content: content of the specific fiel - B = bomb; E = empty; 0-8 = number of bom
 flag: help flag - B = bomb; E = empty; U = undefined
 
 */
+var field;
 
 $(document).ready(function() {
 	var rowN = 5, columnN = 5, bombs = 10;
 
 	generateMatrix(rowN,columnN,bombs);
+
+	$('#btnTeste').mousedown(function(event) {
+	    switch (event.which) {
+	        case 1:
+	        	rightButtonClick();
+	            break;
+	        case 2:
+	        	leftButtonClick();
+	            break;
+	        case 3:
+	        	middleButtonClick();
+	            break;
+	        default:
+	            console.log('You have a strange Mouse!');
+	    }
+	});
 });
+
+rightButtonClick = function(square){
+	console.log('Left Mouse button pressed.');
+};
+
+leftButtonClick = function(square){
+    console.log('Middle Mouse button pressed.');
+    field[square.posX][square.posY].revealed = true;
+    if(square.content === 'B'){
+    	alert('Game Over');
+	} else if(square.content === 'N'){
+
+	} else {
+
+	}
+};
+
+middleButtonClick = function(){
+    console.log('Right Mouse button pressed.');
+};
 
 generateMatrix = function(rowN, columnN, bombs){
 
 	//initialize an empty matrix based on row and column numbers
-	var field = new Array(rowN);
+	field = new Array(rowN);
 	for(var i = 0; i < rowN; i++){
 		field[i] = new Array(columnN);
 	}
@@ -80,5 +117,4 @@ generateMatrix = function(rowN, columnN, bombs){
 	}
 
 	console.log(field);
-
 };
