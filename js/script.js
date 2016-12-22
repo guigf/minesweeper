@@ -5,12 +5,14 @@ content: content of the specific fiel - B = bomb; E = empty; 0-8 = number of bom
 flag: help flag - B = bomb; E = empty; U = undefined
 
 */
+
+
 var field;
 
 $(document).ready(function() {
 	var rowN = 5, columnN = 5, bombs = 10;
 
-	generateMatrix(rowN,columnN,bombs);
+	$scope.generateMatrix(rowN,columnN,bombs);
 
 	$('#btnTeste').mousedown(function(event) {
 	    switch (event.which) {
