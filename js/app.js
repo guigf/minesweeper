@@ -16,22 +16,33 @@ angular.module("appMinesweeper").controller('MainController', ['$scope', functio
     $scope.columnN = 10;
     $scope.bombs = 20;
 
+    var firstTime = true;
+
+    $scope.gameControl = {bombs: $scope.bombs};
 
     $scope.handleClick = function(evt,square) {
-        if(square.revealed){
+        if(firstTime){
+            firstTime = false;
+
+            $scope.generateMatrix($scope.rowN,$scope.columnN,$scope.bombs,square);
+
             return false;
-        };
+        }
+
+        if(((evt.which == 1 || evt.which == 2) && square.revealed) || (evt.which == 3 && !square.revealed)){
+            return false;
+        }
         console.log(evt);
         console.log(square);
         switch(evt.which) {
             case 1:
-            $scope.leftButtonClick(square);
+                $scope.leftButtonClick(square);
             break;
             case 2:
-            $scope.middleButtonClick(square);
+                $scope.middleButtonClick(square);
             break;
             case 3:
-            $scope.rightButtonClick(square);
+                $scope.rightButtonClick(square);
             break;
             default:
             alert("you have a strange mouse");
@@ -40,26 +51,96 @@ angular.module("appMinesweeper").controller('MainController', ['$scope', functio
     };
 
     $scope.rightButtonClick = function(square){
-        console.log('Right Mouse button pressed.');
+        if(square.content === 'B' || square.content === 0){
+            return false;
+        } else{
+            $scope.revealBox(square);
+        }
     };
 
     $scope.leftButtonClick = function(square){
         console.log('Left Mouse button pressed.');
-        $scope.field[square.posX][square.posY].revealed = true;
+        //$scope.field[square.posX][square.posY].revealed = true;
+        square.revealed = true;
         if(square.content === 'B'){
+            square.sprite_r = "img/ms_r_FB.png";
+            $scope.revealAll();
             alert('Game Over');
-        } else if(square.content === 'N'){
-
-        } else {
-
+        } else if(square.content === 0){
+            $scope.spread(square);
         }
     };
 
     $scope.middleButtonClick = function(square){
-        console.log('Middle Mouse button pressed.');
+        if(square.flag === 'E'){
+            $scope.gameControl.bombs--;
+            square.flag = 'B';
+            square.sprite_u = "img/ms_u_B.png";
+        } else if(square.flag === 'B'){
+            $scope.gameControl.bombs++;
+            square.flag = 'U';
+            square.sprite_u = "img/ms_u_U.png";
+        } else if(square.flag === 'U'){
+            square.flag = 'E';
+            square.sprite_u = "img/ms_u_E.png";
+        }
     };
 
-    $scope.generateMatrix = function(rowN,columnN,bombs){
+    $scope.revealAll = function(){
+        for(var i = 0; i < $scope.rowN; i++){
+            for(var j = 0; j < $scope.columnN; j++){
+                if($scope.field[i][j].content !== 'B' && $scope.field[i][j].flag === 'B'){
+                    $scope.field[i][j].sprite_r = 'img/ms_r_WB.png';
+                }
+
+                $scope.field[i][j].revealed = true;
+            };
+        };
+    };
+
+    $scope.revealBox = function(square){
+        //TODO
+    };
+
+    $scope.spread = function(square){
+        square.revealed = true;
+
+        if(square.posX > 0 && $scope.field[square.posX -1][square.posY].revealed === false && $scope.field[square.posX -1][square.posY].content === 0){
+            $scope.spread($scope.field[square.posX -1][square.posY]);
+        } 
+        if(square.posY > 0 && $scope.field[square.posX][square.posY - 1].revealed === false && $scope.field[square.posX][square.posY - 1].content === 0){
+            $scope.spread($scope.field[square.posX][square.posY - 1]);
+        }
+        if(square.posX < $scope.columnN-1 && $scope.field[square.posX + 1][square.posY].revealed === false && $scope.field[square.posX + 1][square.posY].content === 0){
+            $scope.spread($scope.field[square.posX + 1][square.posY]);
+        } 
+        if(square.posY < $scope.rowN-1 && $scope.field[square.posX][square.posY + 1].revealed === false && $scope.field[square.posX][square.posY + 1].content === 0){
+            $scope.spread($scope.field[square.posX][square.posY + 1]);
+        }
+
+        return false;
+    };
+
+    $scope.generateFakeMatrix = function(rowN,columnN){
+        $scope.field = new Array(rowN);
+        for(var i = 0; i < rowN; i++){
+            $scope.field[i] = new Array(columnN);
+        }
+
+        var count = 0;
+        //sets each value of the $scope.field
+        for(var i = 0; i < rowN; i++){
+            for(var j = 0; j < columnN; j++){
+
+                
+                $scope.field[i][j] = {id: count, posX: i, posY: j, content: 0, flag: 'E', revealed: false, sprite_r: "img/ms_r_0.png", sprite_u: "img/ms_u_E.png"};
+
+                count++;
+            }
+        }
+    };
+
+    $scope.generateMatrix = function(rowN,columnN,bombs,firstSquare){
         //initialize an empty matrix based on row and column numbers
         $scope.field = new Array(rowN);
         for(var i = 0; i < rowN; i++){
@@ -91,7 +172,7 @@ angular.module("appMinesweeper").controller('MainController', ['$scope', functio
                     posBombs.pop(count);
                 }
                 
-                $scope.field[i][j] = {id: count, posX: i, posY: j, content: cnt, flag: 'E', revealed: false, sprite: ""};
+                $scope.field[i][j] = {id: count, posX: i, posY: j, content: cnt, flag: 'E', revealed: false, sprite_r: "", sprite_u: "img/ms_u_E.png"};
 
                 count++;
             }
@@ -122,13 +203,14 @@ angular.module("appMinesweeper").controller('MainController', ['$scope', functio
 
                     $scope.field[i][j].content = countBomb;
                 }
-                $scope.field[i][j].sprite = "img/ms_" + $scope.field[i][j].content + ".png";
+                $scope.field[i][j].sprite_r = "img/ms_r_" + $scope.field[i][j].content + ".png";
             }
         }
 
         console.log($scope.field);
     };
 
-    $scope.generateMatrix($scope.rowN,$scope.columnN,$scope.bombs);
+    //$scope.generateMatrix($scope.rowN,$scope.columnN,$scope.bombs);
+    $scope.generateFakeMatrix($scope.rowN,$scope.columnN);
     
 }]);

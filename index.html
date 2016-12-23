@@ -10,42 +10,23 @@
 </head>
 <body>
 	<div ng-app="appMinesweeper" ng-controller="MainController">
-		<button class="action" 
-          		ng-mousedown="handleClick($event)"
-          		oncontextmenu='return false'>Click me
-			
-		</button>
+		<h3>
+			Bombs left: {{gameControl.bombs}}
+		</h3>
 
 		<table>
 			<tbody>
 				<tr ng-repeat="row in field">
 					<td ng-repeat="column in row">
-						<div ng-if="!column.revealed">
-							<img src="img/ms_unrevealed.png"
-								class="action" 
-				          		ng-mousedown="handleClick($event,column)"
-				          		oncontextmenu="return false"
-				          		ng-model="column"/>
-						</div>
-						<div ng-if="column.revealed">
-							<img src="{{column.sprite}}"
-								class="action" 
-				          		ng-mousedown="handleClick($event,column)"
-				          		oncontextmenu="return false"
-				          		ng-model="column"/>
-						</div>
-					</td>
+						<img src="{{column.revealed ? column.sprite_r : column.sprite_u}}"
+							class="action" 
+			          		ng-mousedown="handleClick($event,column)"
+			          		oncontextmenu="return false"
+			          		ng-model="column"/>
 				</tr>
 			</tbody>
 		</table>
 
 	</div>
-	<!--
-	<button id='btnTeste'>Oi</button>
-
-
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
-	<script type="text/javascript" src="js/script.js"></script>
-	-->
 </body>
 </html>
