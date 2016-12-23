@@ -153,7 +153,7 @@ angular.module("appMinesweeper").controller('MainController', ['$scope', functio
             var random;
             do{
                 random = Math.floor((Math.random() * (rowN * columnN)) + 0);
-            } while(posBombs.indexOf(random) >= 0);
+            } while(posBombs.indexOf(random) >= 0 && firstSquare.);
             
             posBombs.push(random);
         }
