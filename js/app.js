@@ -30,7 +30,7 @@ angular.module("appMinesweeper").controller('MainController', ['$scope', functio
             //$scope.leftButtonClick($scope.field[x][y]);
         }
 
-        if(((evt.which == 1 || evt.which == 2) && square.revealed) || (evt.which == 3 && !square.revealed) || (firstTime && (evt.which == 2 || evt.which == 3))){
+        if(((evt.which == 1 || evt.which == 3) && square.revealed) || (evt.which == 2 && !square.revealed) || (firstTime && (evt.which == 2 || evt.which == 3)) || square.flag === 'B'){
             return false;
         }
         console.log(evt);
@@ -43,10 +43,10 @@ angular.module("appMinesweeper").controller('MainController', ['$scope', functio
                 }
             break;
             case 2:
-                $scope.middleButtonClick(square);
+                $scope.rightButtonClick(square);
             break;
             case 3:
-                $scope.rightButtonClick(square);
+                $scope.middleButtonClick(square);
             break;
             default:
             alert("you have a strange mouse");
