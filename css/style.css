@@ -1,4 +1,27 @@
 table > tbody > tr > td {
 	margin: 0px;
 	padding: 0px;
+	display: inline-block;
+	height: 16px;
+}
+
+table > tbody > tr.ng-scope{
+	margin: 0px;
+	padding: 0px;
+	height: 16px !important;
+	/*border-spacing: 0px; */
+	/*display: inline-block;*/
+}
+
+table {
+	border-spacing: 0px;
+}
+
+body {
+   -webkit-touch-callout: none;
+   -webkit-user-select: none;
+   -khtml-user-select: none;
+   -moz-user-select: none;
+   -ms-user-select: none;
+   user-select: none;
 }
