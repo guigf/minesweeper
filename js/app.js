@@ -14,7 +14,7 @@ angular.module("appMinesweeper").controller('MainController', ['$scope', functio
 
     $scope.rowN = 10;
     $scope.columnN = 10;
-    $scope.bombs = 20;
+    $scope.bombs = 15;
 
     var firstTime = true;
 
@@ -22,14 +22,15 @@ angular.module("appMinesweeper").controller('MainController', ['$scope', functio
 
     $scope.handleClick = function(evt,square) {
         if(firstTime){
-            firstTime = false;
+            var x = square.posX;
+            var y = square.posY;
 
             $scope.generateMatrix($scope.rowN,$scope.columnN,$scope.bombs,square);
-
-            return false;
+            square = $scope.field[x][y];
+            //$scope.leftButtonClick($scope.field[x][y]);
         }
 
-        if(((evt.which == 1 || evt.which == 2) && square.revealed) || (evt.which == 3 && !square.revealed)){
+        if(((evt.which == 1 || evt.which == 2) && square.revealed) || (evt.which == 3 && !square.revealed) || (firstTime && (evt.which == 2 || evt.which == 3))){
             return false;
         }
         console.log(evt);
@@ -37,6 +38,9 @@ angular.module("appMinesweeper").controller('MainController', ['$scope', functio
         switch(evt.which) {
             case 1:
                 $scope.leftButtonClick(square);
+                if(firstTime){
+                    firstTime = false;
+                }
             break;
             case 2:
                 $scope.middleButtonClick(square);
@@ -153,7 +157,7 @@ angular.module("appMinesweeper").controller('MainController', ['$scope', functio
             var random;
             do{
                 random = Math.floor((Math.random() * (rowN * columnN)) + 0);
-            } while(posBombs.indexOf(random) >= 0 && firstSquare.);
+            } while(posBombs.indexOf(random) >= 0 || random == firstSquare.id);
             
             posBombs.push(random);
         }
@@ -164,15 +168,20 @@ angular.module("appMinesweeper").controller('MainController', ['$scope', functio
         //sets each value of the $scope.field
         for(var i = 0; i < rowN; i++){
             for(var j = 0; j < columnN; j++){
+                var rev = false;
+
+                /*if(count == firstSquare.id){
+                    rev = true;
+                }*/
 
                 var cnt = 'E';
                 //if the current position is a bomb, set 'content' as 'B'
                 if(posBombs.indexOf(count) >= 0){
                     cnt = 'B';
-                    posBombs.pop(count);
+                    //posBombs.pop(count);
                 }
                 
-                $scope.field[i][j] = {id: count, posX: i, posY: j, content: cnt, flag: 'E', revealed: false, sprite_r: "", sprite_u: "img/ms_u_E.png"};
+                $scope.field[i][j] = {id: count, posX: i, posY: j, content: cnt, flag: 'E', revealed: rev, sprite_r: "", sprite_u: "img/ms_u_E.png"};
 
                 count++;
             }
