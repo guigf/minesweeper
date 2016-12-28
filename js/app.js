@@ -3,6 +3,10 @@ posX: position of row
 posY: posição of column
 content: content of the specific fiel - B = bomb; E = empty; 0-8 = number of bombs around
 flag: help flag - B = bomb; E = empty; U = undefined
+difficult: name = number: n / size row/column / bombs: n
+    easy = number: 0 / size: 15x10 / bombs: 10
+    medium = number: 1 / size: 20x30 / bombs: 75
+    hard = number: 2 / size: 30x45 / bombs: 175
 
 */
 
@@ -12,13 +16,40 @@ angular.module("appMinesweeper").controller('MainController', ['$scope', functio
 
     $scope.field;
 
-    $scope.rowN = 10;
-    $scope.columnN = 10;
-    $scope.bombs = 15;
+    $scope.rowN = 0;
+    $scope.columnN = 0;
+    $scope.bombs = 0;
 
     var firstTime = true;
 
-    $scope.gameControl = {bombs: $scope.bombs};
+    $scope.gameControl = {bombs: $scope.bombs, difficult: 0};
+
+    $scope.defineDifficult = function(difficult){
+        console.log('Vai definir');
+        if(difficult === 0){
+            $scope.rowN = 15;
+            $scope.columnN = 10;
+            $scope.bombs = 10;
+            $scope.gameControl.difficult = difficult;
+            $scope.gameControl.bombs = $scope.bombs;
+        } else if(difficult === 1){
+            $scope.rowN = 20;
+            $scope.columnN = 30;
+            $scope.bombs = 75;
+            $scope.gameControl.difficult = difficult;
+            $scope.gameControl.bombs = $scope.bombs;
+        } else if(difficult === 2){
+            $scope.rowN = 30;
+            $scope.columnN = 45;
+            $scope.bombs = 175;
+            $scope.gameControl.difficult = difficult;
+            $scope.gameControl.bombs = $scope.bombs;
+        }
+
+        firstTime = true;
+
+        $scope.generateFakeMatrix($scope.rowN,$scope.columnN);
+    };
 
     $scope.handleClick = function(evt,square) {
         if(((evt.which == 1 || evt.which == 3) && square.revealed) || (evt.which == 2 && !square.revealed) || (firstTime && (evt.which == 2 || evt.which == 3)) || (square.flag === 'B' && evt.which == 1)){
@@ -134,16 +165,20 @@ angular.module("appMinesweeper").controller('MainController', ['$scope', functio
     $scope.spread = function(square){
         square.revealed = true;
 
-        if(square.posX > 0 && $scope.field[square.posX -1][square.posY].revealed === false && $scope.field[square.posX -1][square.posY].content === 0){
+        if(square.content > 0){
+            return false;
+        }
+
+        if(square.posX > 0 && $scope.field[square.posX -1][square.posY].revealed === false && $scope.field[square.posX -1][square.posY].content >= 0){
             $scope.spread($scope.field[square.posX -1][square.posY]);
         } 
-        if(square.posY > 0 && $scope.field[square.posX][square.posY - 1].revealed === false && $scope.field[square.posX][square.posY - 1].content === 0){
+        if(square.posY > 0 && $scope.field[square.posX][square.posY - 1].revealed === false && $scope.field[square.posX][square.posY - 1].content >= 0){
             $scope.spread($scope.field[square.posX][square.posY - 1]);
         }
-        if(square.posX < $scope.columnN-1 && $scope.field[square.posX + 1][square.posY].revealed === false && $scope.field[square.posX + 1][square.posY].content === 0){
+        if(square.posX < $scope.columnN-1 && $scope.field[square.posX + 1][square.posY].revealed === false && $scope.field[square.posX + 1][square.posY].content >= 0){
             $scope.spread($scope.field[square.posX + 1][square.posY]);
         } 
-        if(square.posY < $scope.rowN-1 && $scope.field[square.posX][square.posY + 1].revealed === false && $scope.field[square.posX][square.posY + 1].content === 0){
+        if(square.posY < $scope.rowN-1 && $scope.field[square.posX][square.posY + 1].revealed === false && $scope.field[square.posX][square.posY + 1].content >= 0){
             $scope.spread($scope.field[square.posX][square.posY + 1]);
         }
 
@@ -245,6 +280,6 @@ angular.module("appMinesweeper").controller('MainController', ['$scope', functio
     };
 
     //$scope.generateMatrix($scope.rowN,$scope.columnN,$scope.bombs);
-    $scope.generateFakeMatrix($scope.rowN,$scope.columnN);
+    $scope.defineDifficult(0);
     
 }]);

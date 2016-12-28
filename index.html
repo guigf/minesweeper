@@ -11,8 +11,27 @@
 <body>
 	<div ng-app="appMinesweeper" ng-controller="MainController">
 		<h3>
-			Bombs left: {{gameControl.bombs}}
+			Bombs: {{gameControl.bombs}}
 		</h3>
+
+		<label>
+		    <input type="radio" ng-model="gameControl.difficult" value="0">
+		    Easy
+		 </label>
+
+		 <label>
+		    <input type="radio" ng-model="gameControl.difficult" value="1">
+		    Medium
+		 </label>
+
+		 <label>
+		    <input type="radio" ng-model="gameControl.difficult" value="2">
+		    Hard
+		 </label>
+
+		 <button ng-click="defineDifficult(gameControl.difficult)">
+		 	New Game
+		 </button>
 
 		<table>
 			<tbody>
