@@ -21,6 +21,10 @@ angular.module("appMinesweeper").controller('MainController', ['$scope', functio
     $scope.gameControl = {bombs: $scope.bombs};
 
     $scope.handleClick = function(evt,square) {
+        if(((evt.which == 1 || evt.which == 3) && square.revealed) || (evt.which == 2 && !square.revealed) || (firstTime && (evt.which == 2 || evt.which == 3)) || (square.flag === 'B' && evt.which == 1)){
+            return false;
+        }
+
         if(firstTime){
             var x = square.posX;
             var y = square.posY;
@@ -29,12 +33,6 @@ angular.module("appMinesweeper").controller('MainController', ['$scope', functio
             square = $scope.field[x][y];
             //$scope.leftButtonClick($scope.field[x][y]);
         }
-
-        if(((evt.which == 1 || evt.which == 3) && square.revealed) || (evt.which == 2 && !square.revealed) || (firstTime && (evt.which == 2 || evt.which == 3)) || square.flag === 'B'){
-            return false;
-        }
-        console.log(evt);
-        console.log(square);
         switch(evt.which) {
             case 1:
                 $scope.leftButtonClick(square);
@@ -43,10 +41,10 @@ angular.module("appMinesweeper").controller('MainController', ['$scope', functio
                 }
             break;
             case 2:
-                $scope.rightButtonClick(square);
+                $scope.middleButtonClick(square);
             break;
             case 3:
-                $scope.middleButtonClick(square);
+                $scope.rightButtonClick(square);
             break;
             default:
             alert("you have a strange mouse");
@@ -55,15 +53,21 @@ angular.module("appMinesweeper").controller('MainController', ['$scope', functio
     };
 
     $scope.rightButtonClick = function(square){
-        if(square.content === 'B' || square.content === 0){
-            return false;
-        } else{
-            $scope.revealBox(square);
+        if(square.flag === 'E'){
+            $scope.gameControl.bombs--;
+            square.flag = 'B';
+            square.sprite_u = "img/ms_u_B.png";
+        } else if(square.flag === 'B'){
+            $scope.gameControl.bombs++;
+            square.flag = 'U';
+            square.sprite_u = "img/ms_u_U.png";
+        } else if(square.flag === 'U'){
+            square.flag = 'E';
+            square.sprite_u = "img/ms_u_E.png";
         }
     };
 
     $scope.leftButtonClick = function(square){
-        console.log('Left Mouse button pressed.');
         //$scope.field[square.posX][square.posY].revealed = true;
         square.revealed = true;
         if(square.content === 'B'){
@@ -76,17 +80,10 @@ angular.module("appMinesweeper").controller('MainController', ['$scope', functio
     };
 
     $scope.middleButtonClick = function(square){
-        if(square.flag === 'E'){
-            $scope.gameControl.bombs--;
-            square.flag = 'B';
-            square.sprite_u = "img/ms_u_B.png";
-        } else if(square.flag === 'B'){
-            $scope.gameControl.bombs++;
-            square.flag = 'U';
-            square.sprite_u = "img/ms_u_U.png";
-        } else if(square.flag === 'U'){
-            square.flag = 'E';
-            square.sprite_u = "img/ms_u_E.png";
+        if(square.content === 'B' || square.content === 0){
+            return false;
+        } else{
+            $scope.revealBox(square);
         }
     };
 
@@ -103,8 +100,36 @@ angular.module("appMinesweeper").controller('MainController', ['$scope', functio
     };
 
     $scope.revealBox = function(square){
-        //TODO
+        var countBomb = 0;
+        var x = square.posX -1;
+        var y = square.posY -1;
+
+        for(var k = x; k < (x+3); k++){
+            for(var l = y; l < (y+3); l++){
+                //check the borders
+                if(k >= 0 && l >= 0 && k < $scope.rowN && l < $scope.columnN){
+                    if($scope.field[k][l].flag === 'B'){
+                        countBomb++;
+                    }
+                }
+            }
+        }
+
+        if(countBomb === square.content){
+            for(var k = x; k < (x+3); k++){
+                for(var l = y; l < (y+3); l++){
+                    //check the borders
+                    if(k >= 0 && l >= 0 && k < $scope.rowN && l < $scope.columnN){
+                        if(!$scope.field[k][l].revealed && $scope.field[k][l].flag != 'B'){
+                            $scope.leftButtonClick($scope.field[k][l]);
+                        }
+                    }
+                }
+            }
+        }
     };
+
+
 
     $scope.spread = function(square){
         square.revealed = true;
