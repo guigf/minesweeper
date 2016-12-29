@@ -280,6 +280,6 @@ angular.module("appMinesweeper").controller('MainController', ['$scope', functio
     };
 
     //$scope.generateMatrix($scope.rowN,$scope.columnN,$scope.bombs);
-    $scope.defineDifficult(0);
+    $scope.defineDifficult(2);
     
 }]);
