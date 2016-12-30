@@ -44,6 +44,12 @@ angular.module("appMinesweeper").controller('MainController', ['$scope', functio
             $scope.bombs = 175;
             $scope.gameControl.difficult = difficult;
             $scope.gameControl.bombs = $scope.bombs;
+        } else if(difficult === 3){
+            $scope.rowN = 20;
+            $scope.columnN = 20;
+            $scope.bombs = 75;
+            $scope.gameControl.difficult = difficult;
+            $scope.gameControl.bombs = $scope.bombs;
         }
 
         firstTime = true;
@@ -88,6 +94,9 @@ angular.module("appMinesweeper").controller('MainController', ['$scope', functio
             $scope.gameControl.bombs--;
             square.flag = 'B';
             square.sprite_u = "img/ms_u_B.png";
+            if($scope.gameControl.bombs == 0){
+
+            }
         } else if(square.flag === 'B'){
             $scope.gameControl.bombs++;
             square.flag = 'U';
@@ -115,6 +124,29 @@ angular.module("appMinesweeper").controller('MainController', ['$scope', functio
             return false;
         } else{
             $scope.revealBox(square);
+        }
+    };
+
+    $scope.verifyVictory = function(){
+        var countBomb = 0;
+
+        for(var i = 0; i < $scope.rowN; i++){
+            for(var j = 0; j < $scope.columnN; j++){
+                if($scope.field[i][j].content === 'B' && $scope.field[i][j].flag === 'B'){
+                    countBomb++;
+                }
+            };
+        };
+
+        if(countBomb == $scope.bombs){
+            for(var i = 0; i < $scope.rowN; i++){
+                for(var j = 0; j < $scope.columnN; j++){
+                    if($scope.field[i][j].content !== 'B'){
+                        $scope.field[i][j].revealed = true;
+                    }
+                };
+            };
+            alert('Congratulations champz! Cê é o bixão mesmo ;)');
         }
     };
 
@@ -280,6 +312,6 @@ angular.module("appMinesweeper").controller('MainController', ['$scope', functio
     };
 
     //$scope.generateMatrix($scope.rowN,$scope.columnN,$scope.bombs);
-    $scope.defineDifficult(2);
+    $scope.defineDifficult(3);
     
 }]);
